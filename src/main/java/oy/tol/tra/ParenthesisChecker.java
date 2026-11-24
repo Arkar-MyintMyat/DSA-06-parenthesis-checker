@@ -61,5 +61,49 @@ public class ParenthesisChecker {
       //         throw an exception, wrong kind of parenthesis were in the text (e.g. "asfa ( asdf } sadf")
       // if the stack is not empty after all the characters have been handled
       //   throw an exception since the string has more opening than closing parentheses.
+      int count = 0;
+      // charAt() is used instead of toCharArray() so no new array is allocated.
+      for (int index = 0; index < fromString.length(); index++) {
+         char current = fromString.charAt(index);
+         if (current == '(' || current == '[' || current == '{') {
+            try {
+               stack.push(current);
+            } catch (StackAllocationException e) {
+               throw new ParenthesesException("Could not push to the stack: " + e.getMessage(),
+                     ParenthesesException.STACK_FAILURE);
+            }
+            count++;
+         } else if (current == ')' || current == ']' || current == '}') {
+            count++;
+            // pop() throws on an empty stack, so check it first.
+            Character opening = stack.isEmpty() ? null : stack.pop();
+            if (opening == null) {
+               throw new ParenthesesException("Too many closing parentheses at index " + index,
+                     ParenthesesException.TOO_MANY_CLOSING_PARENTHESES);
+            }
+            if (!isMatchingPair(opening, current)) {
+               throw new ParenthesesException("Parentheses in wrong order at index " + index + ": "
+                     + opening + " closed with " + current, ParenthesesException.PARENTHESES_IN_WRONG_ORDER);
+            }
+         }
+      }
+      // Anything left in the stack was never closed.
+      if (!stack.isEmpty()) {
+         throw new ParenthesesException("Too few closing parentheses, " + stack.size() + " left open",
+               ParenthesesException.TOO_FEW_CLOSING_PARENTHESES);
+      }
+      return count;
+   }
+
+   /**
+    * Checks if the closing parenthesis is the pair of the opening one.
+    * @param opening The opening parenthesis popped from the stack.
+    * @param closing The closing parenthesis read from the string.
+    * @return true if they belong together, false otherwise.
+    */
+   private static boolean isMatchingPair(char opening, char closing) {
+      return (opening == '(' && closing == ')')
+            || (opening == '[' && closing == ']')
+            || (opening == '{' && closing == '}');
    }
 }

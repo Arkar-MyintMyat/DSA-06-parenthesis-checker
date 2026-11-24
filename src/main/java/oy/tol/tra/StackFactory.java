@@ -37,7 +37,8 @@ public class StackFactory {
     * @return The stack implementation holding Characters.
     */
    public static StackInterface<Character> createCharacterStack() {
-
+      // Same stack as before, just holding Characters this time.
+      StackInterface<Character> stack = new StackImplementation<>();
       return stack;
    }
 
@@ -47,7 +48,8 @@ public class StackFactory {
     * @return The stack implementation holding Characters.
     */
     public static StackInterface<Character> createCharacterStack(int capacity) {
-
+      // StackImplementation checks the capacity and throws if it is too small.
+      StackInterface<Character> stack = new StackImplementation<>(capacity);
       return stack;
    }
 }
